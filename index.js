@@ -8,7 +8,7 @@ const prefix = (() => {
   return pre[0].toUpperCase() + pre.substr(1);
 })();
 
-const prefixed = function(prop, ctx) {
+const prefixed = (prop, ctx) => {
   if (!ctx) {
     ctx = document.documentElement;
   }
@@ -16,61 +16,48 @@ const prefixed = function(prop, ctx) {
   return ctx[prop] ? ctx[prop] : prefix + (prop[0].toUpperCase() + prop.substr(1));
 };
 
+export const requestAnimationFrame = (() => {
+  const rAF = prefixed('requestAnimationFrame', window);
+  if (rAF) {
+    return rAF;
+  }
+
+  let lastTime = 0;
+  return function(callback) {
+    const currTime = new Date().getTime();
+    const timeToCall = Math.max(0, 16 - (currTime - lastTime));
+    const id = window.setTimeout(() => {
+      callback(currTime + timeToCall);
+    }, timeToCall);
+    lastTime = currTime + timeToCall;
+    return id;
+  }
+})();
 
 const preTransform = prefixed('transform');
-const transform = preTransform === 'MsTransform' ? 'msTransform' : preTransform;
-const transition = prefixed('transition');
-const transitionEnd = {
+export const transform = preTransform === 'MsTransform' ? 'msTransform' : preTransform;
+export const transition = prefixed('transition');
+export const transitionEnd = {
   'WebkitTransition': 'webkitTransitionEnd',
   'MozTransition': 'transitionend',
   'MsTransition': 'transitionend',
   'transition': 'transitionend'
 }[transition];
 
-const isHDPI = window.devicePixelRatio && window.devicePixelRatio > 1;
-const isSmall = screen.width < 415 || screen.height < 415;
-const isLarge = (isHDPI && !isSmall);
+export const isHDPI = window.devicePixelRatio && window.devicePixelRatio > 1;
+export const isSmall = screen.width < 415 || screen.height < 415;
+export const isLarge = (isHDPI && !isSmall);
+export const isGeolocation = !!navigator.geolocation;
+export const isCSSOM = window.CSS && CSS.number;
+export const isTouch = !!('ontouchstart' in window);
 
-let requestAnimationFrame = prefixed('requestAnimationFrame', window);
-if (!requestAnimationFrame) {
-  let lastTime = 0;
-  requestAnimationFrame = function(callback) {
-    const currTime = new Date().getTime();
-    const timeToCall = Math.max(0, 16 - (currTime - lastTime));
-    const id = window.setTimeout(function() {
-      callback(currTime + timeToCall);
-    }, timeToCall);
-    lastTime = currTime + timeToCall;
-    return id;
-  };
+export function hdpiImg(obj, img) {
+  return isHDPI ? obj[img + '@2x'] : obj[img];
 }
 
-const isGeolocation = !!navigator.geolocation;
-const isCSSOM = window.CSS && CSS.number;
-const isTouch = !!('ontouchstart' in window);
-
-const hdpiImg = function(obj, img) {
-  return isHDPI ? obj[img + '@2x'] : obj[img];
-};
-
-const hdpiImgDefault = function(obj, img, defaultImg) {
+export function hdpiImgDefault(obj, img, defaultImg) {
   return obj ? hdpiImg(obj, img) : defaultImg;
 }
 
-const isWebkit = !!navigator.userAgent.match(/webkit/i);
+export const isSafari = /webkit/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
 
-export default {
-  requestAnimationFrame,
-  transform,
-  transition,
-  transitionEnd,
-  isWebkit,
-  isHDPI,
-  isCSSOM,
-  isSmall,
-  isGeolocation,
-  isTouch,
-  isLarge,
-  hdpiImg,
-  hdpiImgDefault
-}
