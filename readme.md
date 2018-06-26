@@ -1,6 +1,9 @@
 # Unchained UI
 
-## detective
+## Detective
+
+[![NPM Version](https://img.shields.io/npm/v/uc-detective.svg?style=flat-square)](https://www.npmjs.com/package/uc-detective)
+[![NPM Downloads](https://img.shields.io/npm/dt/uc-detective.svg?style=flat-square)](https://www.npmjs.com/package/uc-detective)
 
 Collection of simple browser features detection functions
 
