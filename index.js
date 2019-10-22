@@ -45,19 +45,54 @@ export const transitionEnd = {
 }[transition];
 
 export const isHDPI = window.devicePixelRatio && window.devicePixelRatio > 1;
-export const isSmall = screen.width < 415 || screen.height < 415;
-export const isLarge = (isHDPI && !isSmall);
+export const is2x = isHDPI && window.devicePixelRatio > 1.5 && window.devicePixelRatio < 2.5;
+export const is3x = isHDPI && window.devicePixelRatio > 2.5;
+export const isSmaller = size => screen.width <= size || screen.height <= size;
+export const isLarger = size => screen.width > size || screen.height > size;
 export const isGeolocation = !!navigator.geolocation;
 export const isCSSOM = window.CSS && CSS.number;
 export const isTouch = !!('ontouchstart' in window);
 
-export function hdpiImg(obj, img) {
-  return isHDPI ? obj[img + '@2x'] : obj[img];
+export function hdpiImg(obj, img, defaultImg = '') {
+  if (obj) {
+    return is2x ? obj[img + '@2x'] : is3x ? obj[img + '@3x'] : obj[img];
+  }
+
+  return defaultImg;
 }
 
-export function hdpiImgDefault(obj, img, defaultImg) {
-  return obj ? hdpiImg(obj, img) : defaultImg;
-}
+export const browser = (function() {
+  const ua = navigator.userAgent;
+  let tem;
+  let M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
 
-export const isSafari = /webkit/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
+  if (/trident/i.test(M[1])) {
+    tem = /\brv[ :]+(\d+)/g.exec(ua) || [];
+    return {
+      name: 'IE',
+      version: tem[1] ? parseFloat(tem[1]) : null
+    }
+  }
+
+  if (M[1] === 'Chrome') {
+    tem = ua.match(/\b(OPR|Edge)\/(\d+)/);
+    if (tem !== null) {
+      return {
+        name: tem[1].replace('OPR', 'Opera'),
+        version: parseFloat(tem[2])
+      }
+    }
+  }
+
+  M = M[2] ? [ M[1], M[2] ] : [ navigator.appName, navigator.appVersion, '-?' ];
+
+  if ((tem = ua.match(/version\/(\d+)/i)) !== null) {
+    M.splice(1, 1, tem[1]);
+  }
+
+  return {
+    name: M[0],
+    version: parseFloat(M[1])
+  }
+})();
 

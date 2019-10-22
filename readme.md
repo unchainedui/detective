@@ -13,7 +13,7 @@ Collection of simple browser features detection functions
 Just import features you need to check
 
 ```js
-import {requestAnimationFrame, isHDPI} from 'uc-detective'
+import { requestAnimationFrame, isHDPI } from 'uc-detective'
 ```
 
 ### Features
@@ -23,18 +23,22 @@ import {requestAnimationFrame, isHDPI} from 'uc-detective'
 * __transform__ — string, prefixed
 * __transition__ — string, prefixed
 * __transitionEnd__ — string, prefixed
-* __isWebkit__ — boolean
+* __browser__
+  - name
+  - version
 * __isHDPI__ — boolean, when devicePixelRatio > 1
-* __isSmall__ – boolean, screen smaller than 415px
-* __isLarge__ – boolean, hdpi and screen size is bigger than 415px
+* __is2x__ — boolean, when devicePixelRatio > 1.5 but less than 2.5
+* __is3x__ — boolean, when devicePixelRatio > 2.5
+* __isSmaller(size)__ – boolean, returns true when screen width of height less than size
+* __isLarger(size)__ – boolean, returns true when screen width of height larfer than size
 * __isTouch__ – boolean
 * __isGeolocation__ – boolean
 
 ### Helpers
 
-#### hdpiImg(imgObj, name)
+#### hdpiImg(imgObj, name, defaultImg)
 
-return coresponded data from the `imgObj`. Example
+return coresponded data from the `imgObj`. If `imgObj` is false returns optional `defaultImg`. Example:
 
 ```js
 import { hdpiImg } from 'uc-detective'
@@ -47,10 +51,6 @@ const image = {
 console.log(hdpiImg(image, 'thumb').url)
 
 ```
-
-#### hdpiImgDefault(imgObj, name, defaultImg)
-
-same as `hdpiImg` but if not imgObj found returns `defaultImg`
 
 License MIT
 
